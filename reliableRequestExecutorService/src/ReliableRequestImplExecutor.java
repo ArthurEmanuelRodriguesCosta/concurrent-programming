@@ -1,14 +1,24 @@
 package src;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import interfaces.Request;
 import interfaces.Response;
 
-public class ReliableRequestImpl implements Request {
+public class ReliableRequestImplExecutor implements Request {
 
 	private static Response response = new ResponseImpl();;
 	private static final String[] mirrors = {"mirror1.com", "mirror2.br", "mirror3.edu"};
+	private ExecutorService executor = Executors.newFixedThreadPool(3);
 	
 	private Thread t1;
 	private Thread t2;
@@ -19,7 +29,7 @@ public class ReliableRequestImpl implements Request {
 	private final int MIRROR_2 = 1;
 	private final int MIRROR_3 = 2;
 	
-	public ReliableRequestImpl() {
+	public ReliableRequestImplExecutor() {
 		
 	}
 	
@@ -27,111 +37,79 @@ public class ReliableRequestImpl implements Request {
 	public String request(String serverName) {
 		try {
 			if (serverName.equals(mirrors[MIRROR_1])) {
-				Thread.sleep(1000 * 30);
+				Thread.sleep(2000);
 			}
 			else if (serverName.equals(mirrors[MIRROR_2]))
-				Thread.sleep(1000 * 3);
+				Thread.sleep(2000);
 			else if (serverName.equals(mirrors[MIRROR_3]))
-				Thread.sleep(2);
+				Thread.sleep(2000);
 		} catch (InterruptedException e) {
 		}
 		
 		return serverName;
 	}
-
-	private synchronized void testAndSet(String valueToSet, Thread threadToFinish1, Thread threadToFinish2) {
-		//System.out.println(Thread.currentThread().getName());
-
-		if (response.getResponse() == null) {
-			threadToFinish1.interrupt();
-			threadToFinish2.interrupt();
-			response.setResponse(valueToSet);
-		}
-	}
-
+	
 	@Override
 	public String reliableRequest() {
 
-		t1 = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				String rawResponse = request(mirrors[MIRROR_1]);
+		Callable<String> request1 = () -> {
+			return request(mirrors[MIRROR_1]);
+		};
 
-				testAndSet(rawResponse, t2, t3);
-			}
-		});
-		t1.start();
+		Callable<String> request2 = () -> {
+			return request(mirrors[MIRROR_2]);
+		};
 
-		t2 = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				String rawResponse = request(mirrors[MIRROR_2]);
-
-				testAndSet(rawResponse, t1, t3);
-			}
-		});
-		t2.start();
-
-		t3 = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				String rawResponse = request(mirrors[MIRROR_3]);
-				
-				testAndSet(rawResponse, t1, t2);
-			}
-		});
-		t3.start();
+		Callable<String> request3 = () -> {
+			return request(mirrors[MIRROR_3]);
+		};
+		
+		List<Callable<String>> tasks = new ArrayList<>();
+		tasks.add(request1);
+		tasks.add(request2);
+		tasks.add(request3);
 
 		try {
-			t1.join();
-		} catch (InterruptedException e) {
+			
+			String result = executor.invokeAny(tasks);
+			executor.shutdown();
+			return result;
+		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
-		return response.getResponse();
+		return null;
 	}
 
 	public String reliableRequestTime() throws Exception {
-		
-		t1 = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				String rawResponse = request(mirrors[MIRROR_1]);
 
-				testAndSet(rawResponse, t2, t3);
-			}
-		});
-		t1.start();
+		Callable<String> request1 = () -> {
+			return request(mirrors[MIRROR_1]);
+		};
 
-		t2 = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				String rawResponse = request(mirrors[MIRROR_2]);
+		Callable<String> request2 = () -> {
+			return request(mirrors[MIRROR_2]);
+		};
 
-				testAndSet(rawResponse, t1, t3);
-			}
-		});
-		t2.start();
+		Callable<String> request3 = () -> {
+			return request(mirrors[MIRROR_3]);
+		};
 		
-		t3 = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				String rawResponse = request(mirrors[MIRROR_3]);
-				
-				testAndSet(rawResponse, t1, t2);
-			}
-		});
-		t3.start();
-		
+		List<Callable<String>> tasks = new ArrayList<>();
+		tasks.add(request1);
+		tasks.add(request2);
+		tasks.add(request3);
+
 		try {
-			t1.join(2000);
-		} catch (InterruptedException e) {
+			String result = executor.invokeAny(tasks, 2000, TimeUnit.MILLISECONDS);
+			executor.shutdown();
+			return result;
+		} catch (InterruptedException | ExecutionException | TimeoutException e) {
+			executor.shutdown();
+			e.printStackTrace();
 		}
-
-		if (response.getResponse() == null) {
-			throw new Exception("Requests to mirrors took more than 2 seconds.");
-		}
-		
-		return response.getResponse();
+		return null;
 	}
 
 	// taking too long to finish
@@ -164,9 +142,9 @@ public class ReliableRequestImpl implements Request {
 				while (!stop) {
 					try {
 						System.out.println(reliableRequestTime());
+						executor = Executors.newFixedThreadPool(3);
 					} catch (Exception e) {
 						e.printStackTrace();
-						stop = true;
 					}
 				}
 			}

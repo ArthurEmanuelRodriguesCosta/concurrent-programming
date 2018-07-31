@@ -4,5 +4,6 @@
 	<classpathentry kind="src" path="AppointmentManager"/>
 	<classpathentry kind="src" path="ConcurrentChannel"/>
 	<classpathentry kind="src" path="reliableRequest"/>
+	<classpathentry kind="src" path="reliableRequestExecutorService"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

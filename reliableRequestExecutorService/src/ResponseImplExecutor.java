@@ -2,11 +2,11 @@ package src;
 
 import interfaces.Response;
 
-public class ResponseImpl implements Response {
+public class ResponseImplExecutor implements Response {
 	
 	private String response;
 	
-	public ResponseImpl() {
+	public ResponseImplExecutor() {
 		this.response = null;
 	}
 
