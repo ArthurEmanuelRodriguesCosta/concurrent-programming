@@ -16,13 +16,9 @@ import interfaces.Response;
 
 public class ReliableRequestImplExecutor implements Request {
 
-	private static Response response = new ResponseImpl();;
 	private static final String[] mirrors = {"mirror1.com", "mirror2.br", "mirror3.edu"};
 	private ExecutorService executor = Executors.newFixedThreadPool(3);
 	
-	private Thread t1;
-	private Thread t2;
-	private Thread t3;
 	private volatile boolean stop = false;
 	
 	private final int MIRROR_1 = 0;
