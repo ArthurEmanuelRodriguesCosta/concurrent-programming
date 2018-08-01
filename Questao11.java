@@ -9,7 +9,7 @@ public class Questao11 {
         NONEXISTENT, ACQUIRING, READY, RELEASING, FREE
     }
 
-    static class Orchestrator {
+    static class Middleware {
         private final int CORE_POLL_SIZE = 10;
         private final int MAX_POOL_SIZE = 10;
         private final long KEEP_ALIVE = 60 * 10; // 10 Minutes
@@ -20,16 +20,16 @@ public class Questao11 {
         private Long nextVM = 1L;
         private final Object lockAcquire = new Object();
 
-        private static Orchestrator instance = new Orchestrator();
+        private static Middleware instance = new Middleware();
 
-        private Orchestrator() {
+        private Middleware() {
             final BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
 
             this.executor = new ThreadPoolExecutor(CORE_POLL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE, UNIT, workQueue);
             this.vms = new ConcurrentHashMap<>();
         }
 
-        public static Orchestrator getInstance() {
+        public static Middleware getInstance() {
             return instance;
         }
 
@@ -79,40 +79,39 @@ public class Questao11 {
         }
     }
 
-    // Testing out the Orchestrator
-
-    private static final Orchestrator o = Orchestrator.getInstance();
+    // Testing out the Middleware
+    private static final Middleware middleware = Middleware.getInstance();
 
     public static void main(String[] args) {
-        long vm1 = o.requireVm();
-        long vm2 = o.requireVm();
-        long vm3 = o.requireVm();
-        long vm4 = o.requireVm();
+        long vm1 = middleware.requireVm();
+        long vm2 = middleware.requireVm();
+        long vm3 = middleware.requireVm();
+        long vm4 = middleware.requireVm();
 
-        while (o.getStatusVm(vm1) != Status.FREE ||
-                o.getStatusVm(vm2) != Status.FREE ||
-                o.getStatusVm(vm3) != Status.FREE ||
-                o.getStatusVm(vm4) != Status.FREE) {
+        while (middleware.getStatusVm(vm1) != Status.FREE ||
+                middleware.getStatusVm(vm2) != Status.FREE ||
+                middleware.getStatusVm(vm3) != Status.FREE ||
+                middleware.getStatusVm(vm4) != Status.FREE) {
 
-            if (o.getStatusVm(vm1) == Status.READY) {
+            if (middleware.getStatusVm(vm1) == Status.READY) {
                 System.out.println(">>> (" + vm1 + ") acquired. Trying to release now...");
-                o.releaseVm(vm1);
+                middleware.releaseVm(vm1);
             }
-            if (o.getStatusVm(vm2) == Status.READY) {
+            if (middleware.getStatusVm(vm2) == Status.READY) {
                 System.out.println(">>> (" + vm2 + ") acquired. Trying to release now...");
-                o.releaseVm(vm2);
+                middleware.releaseVm(vm2);
             }
-            if (o.getStatusVm(vm3) == Status.READY) {
+            if (middleware.getStatusVm(vm3) == Status.READY) {
                 System.out.println(">>> (" + vm3 + ") acquired. Trying to release now...");
-                o.releaseVm(vm3);
+                middleware.releaseVm(vm3);
             }
-            if (o.getStatusVm(vm4) == Status.READY) {
+            if (middleware.getStatusVm(vm4) == Status.READY) {
                 System.out.println(">>> (" + vm4 + ") acquired. Trying to release now...");
-                o.releaseVm(vm4);
+                middleware.releaseVm(vm4);
             }
         }
 
         System.out.println(">>> All VM's released.");
-        o.shutDown();
+        middleware.shutDown();
     }
 }
