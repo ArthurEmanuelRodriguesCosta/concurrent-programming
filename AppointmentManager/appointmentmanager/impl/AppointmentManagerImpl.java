@@ -30,7 +30,6 @@ public class AppointmentManagerImpl implements AppointmentManager {
 		return AppointmentManagerImpl.appointments.add(toAddAppointment);
 	}
 
-	// discutir isso
 	@Override
 	public boolean cancel(int appointmentId) {
 		
@@ -65,11 +64,9 @@ public class AppointmentManagerImpl implements AppointmentManager {
 	public Runnable appointmentNotifier = new Runnable() {
         public void run() {
             while (true) {
-    			//System.out.println("appointments: " + appointments.size());
 	        	for (Appointment appointment : appointments) {
 	        		Long timeToStart = utils.milliSecondsUntil(appointment.start());
 	        		Long timeInSeconds = timeToStart / 1000;
-	        		//System.out.println("time: " + (timeToStart / (1000 * 60))  + " teste: " + ((timeToStart / 1000) % (30) == 0));
 	        		if (timeInSeconds <= 60 && (timeToStart % (1000 * 15) == 0) && (timeToStart > 0)) {
 	        			appNotifier.notify(appointment);
 	        		}
@@ -77,12 +74,10 @@ public class AppointmentManagerImpl implements AppointmentManager {
 	        		if (appointment.start() == System.currentTimeMillis())
         				System.out.println("Appointment " + appointment.getId() + " starting now.");
 	        	}
-
             }
         }
     };
  
-    // meio bugado
     public Runnable canceller = new Runnable() {
         public void run() {
             while (true) {
@@ -92,7 +87,7 @@ public class AppointmentManagerImpl implements AppointmentManager {
             	int appointmentId = sc.nextInt();
             	
             	cancel(appointmentId);
-            	System.out.println(appointmentId);
+            	System.out.println(AppointmentManagerImpl.appointments);
             }
        }
     };

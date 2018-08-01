@@ -3,7 +3,7 @@ package concurrent.channel.impl;
 import concurrent.channel.Channel;
 
 public class ChannelMain {
-	private static Channel c = new ChannelImpl(1);
+	private static Channel c = new ChannelImpl(3);
 	
     private static Runnable t1 = new Runnable() {
         public void run() {

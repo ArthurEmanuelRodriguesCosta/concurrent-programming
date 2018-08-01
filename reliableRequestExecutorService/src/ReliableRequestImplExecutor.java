@@ -31,7 +31,7 @@ public class ReliableRequestImplExecutor implements Request {
 	public String request(String serverName) {
 		try {
 			if (serverName.equals(mirrors[MIRROR_1])) {
-				Thread.sleep(2000);
+				Thread.sleep(30000);
 			}
 			else if (serverName.equals(mirrors[MIRROR_2]))
 				Thread.sleep(2000);
@@ -69,7 +69,6 @@ public class ReliableRequestImplExecutor implements Request {
 			executor.shutdown();
 			return result;
 		} catch (InterruptedException | ExecutionException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -106,15 +105,12 @@ public class ReliableRequestImplExecutor implements Request {
 		return null;
 	}
 
-	// taking too long to finish
 	public void reliableRequestEvent() {
 		
 		Thread readStandard = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
-				
 				Scanner sc = new Scanner(System.in);
 
 				while (!stop)
@@ -124,7 +120,7 @@ public class ReliableRequestImplExecutor implements Request {
 
 		});
 		
-		Thread t4 = new Thread(new Runnable() {
+		Thread executesRequests = new Thread(new Runnable() {
 
 			@Override
 			public void run() {
@@ -145,7 +141,7 @@ public class ReliableRequestImplExecutor implements Request {
 			
 		});
 		
-		t4.start();
+		executesRequests.start();
 		readStandard.start();
 	}
 
@@ -153,15 +149,19 @@ public class ReliableRequestImplExecutor implements Request {
 		
 		ReliableRequestImplExecutor req = new ReliableRequestImplExecutor();
 		
+		// IMPORTANT: each of the lines below must be run separately
+		// the behavior of running more than one of the functions reliableRequest, reliableRequestTime 
+		// and reliableRequestEvent simultaneously was not tested
+		
 		try {
-			// uncomment the line below to test the reliableRequest with a time threshold of 2 seconds 
+			// run the line below to test the reliableRequest with a time threshold of 2 seconds 
 			//System.out.println("Mirror used: " + req.reliableRequestTime());
 			
-			// uncomment the line below to test the reliableRequest
+			// run the line below to test the reliableRequest
 			//System.out.println("Mirror used: " + req.reliableRequest());
 			
 			// runs reliableRequest until a S in written in the standard input
-			//req.reliableRequestEvent();
+			req.reliableRequestEvent();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

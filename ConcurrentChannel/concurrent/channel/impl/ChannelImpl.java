@@ -16,9 +16,7 @@ public class ChannelImpl implements Channel {
 	public void putMessage(String message) {
 		try {
 			buffer.put(message);
-			System.out.println("put " + buffer);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -29,10 +27,8 @@ public class ChannelImpl implements Channel {
 		try {
 			message = buffer.take();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("ttake " + buffer);
 		return message;
 	}
 

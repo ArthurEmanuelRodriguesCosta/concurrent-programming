@@ -5,6 +5,7 @@ import java.util.Scanner;
 import interfaces.Request;
 import interfaces.Response;
 
+
 public class ReliableRequestImpl implements Request {
 
 	private static Response response = new ResponseImpl();;
@@ -24,6 +25,7 @@ public class ReliableRequestImpl implements Request {
 	}
 	
 	@Override
+	@Deprecated
 	public String request(String serverName) {
 		try {
 			if (serverName.equals(mirrors[MIRROR_1])) {
@@ -39,6 +41,7 @@ public class ReliableRequestImpl implements Request {
 		return serverName;
 	}
 
+	@Deprecated
 	private synchronized void testAndSet(String valueToSet, Thread threadToFinish1, Thread threadToFinish2) {
 		//System.out.println(Thread.currentThread().getName());
 
@@ -50,6 +53,7 @@ public class ReliableRequestImpl implements Request {
 	}
 
 	@Override
+	@Deprecated
 	public String reliableRequest() {
 
 		t1 = new Thread(new Runnable() {
@@ -90,6 +94,7 @@ public class ReliableRequestImpl implements Request {
 		return response.getResponse();
 	}
 
+	@Deprecated
 	public String reliableRequestTime() throws Exception {
 		
 		t1 = new Thread(new Runnable() {
@@ -135,6 +140,7 @@ public class ReliableRequestImpl implements Request {
 	}
 
 	// taking too long to finish
+	@Deprecated
 	public void reliableRequestEvent() {
 		
 		Thread readStandard = new Thread(new Runnable() {
@@ -177,6 +183,7 @@ public class ReliableRequestImpl implements Request {
 		readStandard.start();
 	}
 
+	@Deprecated
 	public static void main(String[] args) throws InterruptedException {
 		
 		ReliableRequestImplExecutor req = new ReliableRequestImplExecutor();
