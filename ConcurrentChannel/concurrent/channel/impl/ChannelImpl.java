@@ -13,7 +13,7 @@ public class ChannelImpl implements Channel {
     }
 
 	@Override
-	public synchronized void putMessage(String message) {
+	public void putMessage(String message) {
 		try {
 			buffer.put(message);
 			System.out.println("put " + buffer);

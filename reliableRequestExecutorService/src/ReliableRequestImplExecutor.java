@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import interfaces.Request;
-import interfaces.Response;
 
 public class ReliableRequestImplExecutor implements Request {
 
@@ -158,11 +156,12 @@ public class ReliableRequestImplExecutor implements Request {
 		try {
 			// uncomment the line below to test the reliableRequest with a time threshold of 2 seconds 
 			//System.out.println("Mirror used: " + req.reliableRequestTime());
-			// uncomment the line below to teste the reliableRequest
+			
+			// uncomment the line below to test the reliableRequest
 			//System.out.println("Mirror used: " + req.reliableRequest());
 			
 			// runs reliableRequest until a S in written in the standard input
-			req.reliableRequestEvent();
+			//req.reliableRequestEvent();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
